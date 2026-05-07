@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=320">
+  <title>Twitter Cleaner</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="tc-popup">
+    <header class="tc-header">
+      <h1>Twitter Cleaner</h1>
+      <span class="tc-version">v0.2.0</span>
+    </header>
+
+    <section class="tc-stats">
+      <div class="tc-stat">
+        <span class="tc-stat-num" id="stat-spam">0</span>
+        <span class="tc-stat-label">Spam</span>
+      </div>
+      <div class="tc-stat">
+        <span class="tc-stat-num" id="stat-good">0</span>
+        <span class="tc-stat-label">Good</span>
+      </div>
+      <div class="tc-stat">
+        <span class="tc-stat-num" id="stat-total">0</span>
+        <span class="tc-stat-label">Total</span>
+      </div>
+    </section>
+
+    <section class="tc-model-section">
+      <div class="tc-model-status" id="model-status">未训练</div>
+      <button id="btn-train" class="tc-action-btn tc-train-btn">训练模型</button>
+    </section>
+
+    <section class="tc-actions">
+      <button id="btn-sync" class="tc-action-btn tc-sync-btn">从 GitHub 同步数据</button>
+      <div class="tc-sync-status" id="sync-status"></div>
+      <button id="btn-export" class="tc-action-btn">导出 JSONL</button>
+      <label class="tc-action-btn tc-file-label">
+        导入 JSONL
+        <input type="file" id="file-import" accept=".jsonl,.json" hidden>
+      </label>
+    </section>
+
+    <section class="tc-threshold">
+      <label>
+        阈值: <span id="threshold-val">0.75</span>
+        <input type="range" id="threshold-slider" min="0.30" max="0.95" step="0.05" value="0.65">
+      </label>
+    </section>
+
+    <section class="tc-danger">
+      <button id="btn-clear" class="tc-danger-btn">清空所有数据</button>
+    </section>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

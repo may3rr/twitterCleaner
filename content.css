@@ -1,0 +1,43 @@
+/* --- Label buttons (injected into X.com action bar) --- */
+
+.tc-label-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34.75px;
+  min-height: 34.75px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 8px 6px;
+  flex-shrink: 0;
+}
+
+.tc-label-btn:hover {
+  background: rgba(29, 155, 240, 0.1);
+}
+
+.tc-label-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+  .tc-label-btn { color: #536471; }
+  .tc-btn-spam.tc-active { color: #f4212e; }
+  .tc-btn-good.tc-active { color: #00ba7c; }
+  .tc-btn-spam.tc-active:hover { background: rgba(244, 33, 46, 0.1); }
+  .tc-btn-good.tc-active:hover { background: rgba(0, 186, 124, 0.1); }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .tc-label-btn { color: #71767b; }
+  .tc-btn-spam.tc-active { color: #f4212e; }
+  .tc-btn-good.tc-active { color: #00ba7c; }
+  .tc-btn-spam.tc-active:hover { background: rgba(244, 33, 46, 0.15); }
+  .tc-btn-good.tc-active:hover { background: rgba(0, 186, 124, 0.15); }
+}

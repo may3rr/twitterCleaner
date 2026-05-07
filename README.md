@@ -1,4 +1,7 @@
 # Twitter Cleaner
+<p align="center">
+  <img src="icons/logo.png" width="128" alt="Twitter Cleaner">
+</p>
 
 一个本地运行的 Chrome 扩展，用于过滤 X.com 上的垃圾推文。所有数据留在浏览器里，不依赖外部服务，不创建账号，不出站任何信息。
 

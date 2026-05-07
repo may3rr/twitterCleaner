@@ -204,9 +204,30 @@
 
   // --- Main processing ---
 
+  let blockedCount = 0;
+  const blockedIds = new Set();
+
+  function removeSpam(article, tweetId) {
+    const cell = article.closest('[data-testid="cellInnerDiv"]');
+    if (cell) {
+      cell.remove();
+    } else {
+      article.remove();
+    }
+    blockedIds.add(tweetId);
+    blockedCount++;
+    console.log(`[TC] 已屏蔽 ${blockedCount} 条垃圾推文 (id: ${tweetId})`);
+  }
+
   function injectButtons(article) {
     const tweetId = extractTweetId(article);
     if (!tweetId) return;
+
+    // If this tweet was already blocked but X.com re-inserted it, remove again
+    if (blockedIds.has(tweetId)) {
+      removeSpam(article, tweetId);
+      return;
+    }
 
     const text = extractTweetText(article);
     const author = extractAuthor(article);
@@ -219,7 +240,7 @@
     const hasMedia = !!article.querySelector('[data-testid="tweetPhoto"], [data-testid="videoPlayer"], [data-testid="card.wrapper"]');
     const score = getScore(text, author, hasMedia);
     if (score >= currentThreshold) {
-      article.remove();
+      removeSpam(article, tweetId);
       return;
     }
 

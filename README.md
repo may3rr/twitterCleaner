@@ -1,50 +1,146 @@
-# Twitter Cleaner
 <p align="center">
-  <img src="icons/logo.png" width="128" alt="Twitter Cleaner">
+ <img src="icons/logo.png" width="128" alt="Twitter Cleaner">
 </p>
 
-一个本地运行的 Chrome 扩展，用于过滤 X.com 上的垃圾推文。所有数据留在浏览器里，不依赖外部服务，不创建账号，不出站任何信息。
+<h1 align="center">Twitter Cleaner</h1>
 
-## 工作方式
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-Chrome-brightgreen" alt="Platform">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
+  <img src="https://img.shields.io/badge/precision-1.000-success" alt="Precision">
+  <img src="https://img.shields.io/badge/recall-0.727-yellow" alt="Recall">
+  <img src="https://img.shields.io/badge/data-472%20samples-informational" alt="Training data">
+</p>
+<p align="center">
+ <a href="#安装">安装</a> •
+ <a href="#工作方式">工作方式</a> •
+ <a href="#性能">性能</a> •
+ <a href="#贡献">贡献</a>
+</p>
 
-扩展启动后会在每条推文旁边注入两个按钮：盾牌图标标记为垃圾，对勾图标标记为正常。分数超过阈值的垃圾推文会直接从页面移除，不留痕迹。对正常推文，你可以手动点击按钮进行标记，这些标记会成为模型的训练数据。
+---
 
-过滤逻辑分两层。第一层是规则引擎，通过关键词命中、链接数量、emoji 比例、色情招揽模式等特征打分，适合冷启动阶段。第二层是机器学习分类器，使用字符级 TF-IDF 特征配合朴素贝叶斯模型，随着你标记的数据越多，过滤效果越好。两层分数按 0.6 和 0.4 的权重合并，超过阈值的推文会被移除。
+## 效果截图
 
-扩展还支持从 GitHub 同步社区训练数据。点击弹出页面中的「从 GitHub 同步数据」按钮，即可拉取仓库中最新的标注数据并合并到本地。你也可以导出自己的标注记录，提交 PR 为社区数据做贡献。
+<table>
+ <tr>
+ <td align="center"><strong>过滤前</strong></td>
+ <td align="center"><strong>过滤后</strong></td>
+ </tr>
+ <tr>
+ <td><img src="img/before.png" alt="过滤前"></td>
+ <td><img src="img/after.png" alt="过滤后"></td>
+ </tr>
+</table>
 
-## 当前性能
+## 使用说明
+每个人都可以在使用过程中持续标注数据，让模型变得越来越准。这点收到了我很爱的项目熊猫吃短信的启发。[熊猫吃短信 作者Baye 𝕏](https://x.com/waylybaye)
 
-模型在 472 条标注数据上进行了 10 折交叉验证，其中 176 条垃圾、296 条正常。当前使用的模型是 TF-IDF 字符 2-4 gram + 多项式朴素贝叶斯，词汇表规模 3924 个特征。
+但是也许数据足够多的时候，就不需要再展示标注按钮了。
+<table>
+ <tr>
+ <td align="center"><img src="img/good.png" width="320" alt="标记为正常"><br><sub>点击对勾标记为正常</sub></td>
+ <td align="center"><img src="img/scam.png" width="320" alt="标记为垃圾"><br><sub>点击盾牌标记为垃圾</sub></td>
+ <td align="center"><img src="img/popup.png" width="320" alt="弹出面板"><br><sub>弹出面板</sub></td>
+ </tr>
+</table>
 
-| 指标 | 数值 |
-|------|------|
-| 精确率 | 1.0000 |
-| 召回率 | 0.7273 |
-| F1 分数 | 0.8421 |
-| 误杀数 | 0 |
-| 漏网数 | 48 |
+## 特性
+很多类似的插件，要么是基于规则的，容易漏，尤其是现在scam bot每天话术千变万化；要么是基于LLM的，有些慢，而且LLM对于那种纯Emoji+数字的，表现也不一定好。众所周知，最经典的垃圾邮件检测用贼简单的贝叶斯就可以获得非常不错的效果，那我们为什么不用ML做一个推特垃圾评论过滤器呢，所以这个项目就出现了。
 
-精确率为 1 意味着在交叉验证中没有误杀任何正常推文。召回率 0.73 意味着每 100 条垃圾推文能抓住 73 条，剩下 27 条不会被移除，用户可以手动标记。
-
-我们也测试了其他机器学习方法。字符级 TF-IDF 的表现远超单词级特征，尤其在处理中日韩文本和 Unicode 混淆字符时优势明显。
+特性就是ML、持续训练的系统。我希望尽可能的无感，所以识别为spam的信息会直接删除该条信息，这样就不可避免偶尔会删掉一个正常评论，后续随着标注数量上来，会有改善。
 
 ## 安装
 
-克隆本仓库，在 Chrome 中打开 `chrome://extensions`，开启右上角的开发者模式，点击「加载已解压的扩展程序」并选择项目文件夹。打开 X.com 即可看到标记按钮。
+```bash
+git clone https://github.com/may3rr/twitterCleaner.git
+```
 
-## 欢迎贡献
+1. 打开 `chrome：//extensions`
+2. 开启右上角的开发者模式
+3. 点击 "加载已解压的扩展程序"，选择项目目录
+4. 打开 X.com，刷新页面
 
-你可以从扩展的弹出页面导出自己的标注记录，格式为 JSONL，每行一条记录，包含推文 ID、文本、标签等字段。提交 PR 时只需把导出的文件放到项目目录，我们会定期合并到 training_data.jsonl 并重新训练模型。数据越多，模型在不同语言、不同垃圾类型上的表现就越好。
+## 工作方式
 
-如果你能在保持零误杀的前提下提升召回率，欢迎提交训练脚本和导出的模型文件。特别希望获得更多边缘样本：容易被误判为垃圾的技术讨论、非英语垃圾文本、使用 Unicode 装饰字符的变体、以及纯 emoji 或纯数字的短推文。
+每条推文旁会注入两个按钮：盾牌 （标记垃圾）、对勾 （标记正常）。分数超过阈值的推文直接从 DOM 中移除。
+### 过滤管线
+```
+推文文本
+|
++--> 规则引擎 （rules.js） --> score_rule x 0.6
+| 关键词、链接数、emoji 比例、| 色情招揽模式
+|
++--> TF-IDF + Naive Bayes --> score_ml x 0.4
+字符 2-4 gram, 3924 维
+|
+v
+score_final >= threshold
+|
+v
+移除推文
+```
 
-## 技术架构
+第一层规则引擎覆盖冷启动，第二层 ML 分类器随标注数据增长持续改进。
 
-扩展遵循 Chrome MV3 规范。content.js 通过 MutationObserver 监听 DOM 变化，提取推文文本和作者信息，调用 rules.js 和 model.js 计算分数，超过阈值的推文直接移除。background.js 作为 service worker 负责 IndexedDB 存储、模型训练和 GitHub 数据同步。popup 页面提供统计数据展示、阈值调整、数据导入导出和手动训练功能。
+### 文件结构
 
-config.js 集中管理 DOM 选择器、阈值参数和关键词列表，当 X.com 修改页面结构时只需更新这一个文件。rules.js 实现规则打分，覆盖关键词命中、链接计数、emoji 比例、重复标点、色情招揽模式、Unicode 混淆检测等维度。model.js 实现 TF-IDF 特征提取和朴素贝叶斯评分，同时保留了旧版手写特征的训练接口用于手动重训练。tfidf_model.json 是预训练好的模型权重，首次加载时自动读取。
+| 文件 | 作用 |
+|------|------|
+| `content.js` | 注入按钮、监听 DOM、调用打分 |
+| `rules.js` | 关键词与启发式规则 |
+| `model.js` | TF-IDF 向量化 + 朴素贝叶斯推理 |
+| `tfidf_model.json` | 预训练词表与对数概率 |
+| `db.js` | IndexedDB 存储用户标注 |
+| `training_data.jsonl` | 社区共享语料 |
+
+## 性能
+
+10 折交叉验证，模型 = TF-IDF char 2-4 gram + Multinomial NB，词表 3924。
+| 指标 | 值 |
+|------|----|
+| 样本量 | 472（垃圾 176 / 正常 296） |
+| Precision | **1.0000** |
+| Recall | 0.7273 |
+| F1 | 0.8421 |
+| 误杀 （FP） | 0 |
+| 漏网 （FN） | 48 |
+
+Precision = 1 表示交叉验证中零误杀正常推文。Recall = 0.73 表示每 100 条垃圾抓住 73 条，剩余 27 条留给用户手动标记并喂回模型。字符级特征在处理中日韩文本和 Unicode 混淆字符 （如 𝓱𝓮𝓵𝓵𝓸） 时显著优于词级特征，这是选用字符 n-gram 的核心原因。
+
+## 贡献
+
+### 提交标注数据
+
+1. 在扩展弹出面板点击 "导出标注"，得到 `labels-YYYYMMDD.jsonl`
+2. Fork 本仓库，把文件放到 `contrib/` 目录
+3. 提 PR，合并后会被并入 `training_data.jsonl` 并触发重训练
+
+JSONL 每行格式：
+```json
+{"id": "1234567890", "text": "...", "label": "spam", "ts": 1735689600}
+```
+
+### 想要的样本类型
+
+- 容易被误判为垃圾的技术讨论
+- 非英语垃圾文本 （中、日、韩、阿、俄）
+- Unicode 装饰字符变体
+- 纯 emoji 或纯数字短推文
+
+### 提交模型改进
+
+如果能在 Precision = 1.0 的前提下提升 Recall，欢迎附训练脚本和 `tfidf_model.json` 一起提 PR。
 
 ## 致谢
 
-色情招揽关键词规则参考了 x-block 项目的实现。整个扩展使用纯 JavaScript 编写，没有外部依赖。
+关键词规则参考 [x-block](https://github.com/xuanyuanzhifeng/x-block)。
+
+## License
+
+MIT
+
+---
+
+<p align="center">
+ 如果这个项目帮到你，点个 ⭐ 是最好的支持。</p>
